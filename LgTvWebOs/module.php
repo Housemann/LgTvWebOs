@@ -30,15 +30,25 @@
           // Propertys
           $this->RegisterPropertyBoolean('mute', false);
           $this->RegisterPropertyBoolean('turnOff', false);
-          $this->RegisterPropertyBoolean('volumeUp', false);
-          $this->RegisterPropertyBoolean('volumeDown', false);
+          $this->RegisterPropertyBoolean('volumeUpDown', false);
           $this->RegisterPropertyBoolean('setVolume', false);
           $this->RegisterPropertyBoolean('startApp', false);
           $this->RegisterPropertyBoolean('play_pause', false);
 
-          
-          
       }
+
+      public function Destroy() {
+          // Remove variable profiles from this module if there is no instance left
+          $InstancesAR = IPS_GetInstanceListByModuleID('{5C50B523-D0E8-C6AC-757F-80D621F7376F}');
+          if ((@array_key_exists('0', $InstancesAR) === false) || (@array_key_exists('0', $InstancesAR) === NULL)) {
+              $VarProfileAR = array('LGTV.volume', 'LGTV.volume');
+              foreach ($VarProfileAR as $VarProfileName) {
+                  @IPS_DeleteVariableProfile($VarProfileName);
+              }
+          }
+          parent::Destroy();
+      }
+  
 
       // Überschreibt die intere IPS_ApplyChanges($id) Funktion
       public function ApplyChanges() {
@@ -65,25 +75,22 @@
             $this->SendDebug("DeleteVariable", "turnOff", 0);
           }
 
-          // Variable mit volumeUp anlegen
-          if($this->ReadPropertyBoolean("volumeUp")==true) {
-            $this->RegisterVariableInteger("volumeUp","volumeUp");
-            $this->EnableAction("volumeUp");
-            $this->SendDebug("CreateVariable", "volumeUp", 0);
+          // Variable mit volumeUpDown anlegen
+          if($this->ReadPropertyBoolean("volumeUpDown")==true) {
+          
+            // Create variable profiles
+            $this->RegisterProfileBooleanEx('LGTV.volume', 'Speaker', '', '', Array(
+              Array(false, 'VolumeUp', '', 0xFF0000),
+              Array(true, 'VolumeDown', '', 0x00FF00)
+              ));
+	
+            $this->RegisterVariableBoolean("volumeUpDown","Volume + / -","LGTV.volume");
+            $this->EnableAction("volumeUpDown");
+            $this->SendDebug("CreateVariable", "volumeUpDown", 0);
           } else {  
-            $this->UnregisterVariable("volumeUp");
-            $this->SendDebug("DeleteVariable", "volumeUp", 0);            
+            $this->UnregisterVariable("volumeUpDown");
+            $this->SendDebug("DeleteVariable", "volumeUpDown", 0);            
           }
-
-          // Variable mit volumeDown anlegen
-          if($this->ReadPropertyBoolean("volumeDown")==true) {
-            $this->RegisterVariableInteger("volumeDown","volumeDown");
-            $this->EnableAction("volumeDown");
-            $this->SendDebug("CreateVariable", "volumeDown", 0);
-          } else {  
-            $this->UnregisterVariable("volumeDown");
-            $this->SendDebug("DeleteVariable", "volumeDown", 0);
-          } 
             
           // Variable mit setVolume anlegen
           if($this->ReadPropertyBoolean("setVolume")==true) {
@@ -334,13 +341,12 @@
           case "turnOff":
             SetValue($this->GetIDForIdent($Ident), $Value);
             break;
-          case "volumeUp":
+          case "volumeUpDown":
             SetValue($this->GetIDForIdent($Ident), $Value);
-            $this->volumeUp();
-            break;
-          case "volumeDown":
-            SetValue($this->GetIDForIdent($Ident), $Value);
-            $this->volumeDown();
+            if($Value==0)
+              $this->volumeUp();
+            else
+              $this->volumeDown();
             break;
           case "setVolume":
             SetValue($this->GetIDForIdent($Ident), $Value);
@@ -358,6 +364,33 @@
             throw new Exception("Invalid Ident");
         }
       }
+
+      protected function RegisterProfileBooleanEx($Name, $Icon, $Prefix, $Suffix, $Associations) {
+        $this->RegisterProfileBoolean($Name, $Icon, $Prefix, $Suffix);
+  
+        foreach ($Associations as $Association) {
+          IPS_SetVariableProfileAssociation($Name, $Association[0], $Association[1], $Association[2], $Association[3]);
+        }
+  
+        return true;
+      }
+      
+     protected function RegisterProfileBoolean($Name, $Icon, $Prefix, $Suffix) {
+      if (IPS_VariableProfileExists($Name) === false) {
+          IPS_CreateVariableProfile($Name, 0);
+      } else {
+          $ProfileInfo = IPS_GetVariableProfile($Name);
+          if ($ProfileInfo['ProfileType'] !== 0) {
+              $this->SendDebug(__FUNCTION__, 'Type of variable does not match the variable profile "' . $Name . '"', 0);
+              return false;
+          }
+      }
+
+      IPS_SetVariableProfileIcon($Name, $Icon);
+      IPS_SetVariableProfileText($Name, $Prefix, $Suffix);
+
+      return true;
+    }
 
       private function hybi10Encode(string $payload, string $type = 'text', bool $masked = true) { 
         $frameHead = array(); 

@@ -28,13 +28,8 @@
       },
       {
         "type": "CheckBox",
-        "caption": "Create volumeUp Button",
-        "name": "volumeUp"
-      },      
-      {
-        "type": "CheckBox",
-        "caption": "Create volumeDown Button",
-        "name": "volumeDown"
+        "caption": "Create volumeUpDown Button",
+        "name": "volumeUpDown"
       },
       {
         "type": "CheckBox",
