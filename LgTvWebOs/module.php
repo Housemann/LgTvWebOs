@@ -130,7 +130,7 @@
                     { 
                       $lg_key_received = true; 
                       $this->lg_key = $result['payload']['client-key']; 
-                      #echo "LG Client-Key successfully received: $this->lg_key\n";  
+                      echo "LG Client-Key successfully received: $this->lg_key\n";  
                       IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully received: $this->lg_key\n");
                       return $this->lg_key;
                     }  
