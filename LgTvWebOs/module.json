@@ -1,0 +1,15 @@
+{
+  "id": "{5C50B523-D0E8-C6AC-757F-80D621F7376F}",
+  "name": "LgTvWebOs",
+  "type": 3,
+  "vendor": "",
+  "aliases":
+  [
+      "LG TV WebOs"
+  ],
+  "url": "https://github.com/Housemann/LgTvWebOs",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "LGTV"
+}

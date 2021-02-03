@@ -1,0 +1,32 @@
+{
+  "elements":[
+      { 
+        "type": "ValidationTextBox", 
+        "name": "IPAddress", 
+        "caption": "Lg IP-Adress" 
+      },
+      {
+        "type": "ValidationTextBox",
+        "name": "LgClientKey",
+        "caption": "Lg Client Key"
+      },
+      {
+        "type": "Label"
+      },
+      {
+        "type": "Label"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Mute Button erstellen",
+        "name": "CheckBox"
+      }
+  ],
+  "actions": [
+    {
+      "type": "Button",
+      "caption": "Handshake",
+      "onClick": "LGTV_ConnectForHandshake($id);"
+    }
+  ]
+}
