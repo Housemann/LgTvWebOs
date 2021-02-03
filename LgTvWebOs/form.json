@@ -18,8 +18,38 @@
       },
       {
         "type": "CheckBox",
-        "caption": "Mute Button erstellen",
-        "name": "CheckBox"
+        "caption": "Create Mute Button",
+        "name": "mute"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create TurnOff Button",
+        "name": "turnOff"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create volumeUp Button",
+        "name": "volumeUp"
+      },      
+      {
+        "type": "CheckBox",
+        "caption": "Create volumeDown Button",
+        "name": "volumeDown"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create setVolume Button",
+        "name": "setVolume"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create startApp Button",
+        "name": "startApp"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create PlayPause Button",
+        "name": "play_pause"
       }
   ],
   "actions": [

@@ -27,7 +27,15 @@
           $this->RegisterPropertyString ("IPAddress", "1.1.1.1");
           $this->RegisterPropertyString ("LgClientKey","");
 
-          $this->RegisterPropertyBoolean('CheckBox', false);
+          // Propertys
+          $this->RegisterPropertyBoolean('mute', false);
+          $this->RegisterPropertyBoolean('turnOff', false);
+          $this->RegisterPropertyBoolean('volumeUp', false);
+          $this->RegisterPropertyBoolean('volumeDown', false);
+          $this->RegisterPropertyBoolean('setVolume', false);
+          $this->RegisterPropertyBoolean('startApp', false);
+          $this->RegisterPropertyBoolean('play_pause', false);
+
           
           
       }
@@ -38,12 +46,72 @@
           parent::ApplyChanges();
 
           // Variable mit Mute anlegen
-          if($this->ReadPropertyBoolean("CheckBox")==true)
-            $this->RegisterVariableBoolean("Mute","Mute","~Switch");
-          else 
-            $this->UnregisterVariable("Mute");
+          if($this->ReadPropertyBoolean("mute")==true) {
+            $this->RegisterVariableBoolean("mute","mute","~Switch");
+            $this->EnableAction("mute");
+            $this->SendDebug("CreateVariable", "mute", 0);
+          } else { 
+            $this->UnregisterVariable("mute");
+            $this->SendDebug("DeleteVariable", "mute", 0);
+          }
 
-          
+          // Variable mit turnOff anlegen
+          if($this->ReadPropertyBoolean("turnOff")==true) { 
+            $this->RegisterVariableBoolean("turnOff","turnOff","~Switch");
+            $this->EnableAction("turnOff");
+            $this->SendDebug("CreateVariable", "turnOff", 0);
+          } else {  
+            $this->UnregisterVariable("turnOff");
+            $this->SendDebug("DeleteVariable", "turnOff", 0);
+          }
+
+          // Variable mit volumeUp anlegen
+          if($this->ReadPropertyBoolean("volumeUp")==true) {
+            $this->RegisterVariableInteger("volumeUp","volumeUp");
+            $this->EnableAction("volumeUp");
+            $this->SendDebug("CreateVariable", "volumeUp", 0);
+          } else {  
+            $this->UnregisterVariable("volumeUp");
+            $this->SendDebug("DeleteVariable", "volumeUp", 0);            
+          }
+
+          // Variable mit volumeDown anlegen
+          if($this->ReadPropertyBoolean("volumeDown")==true) {
+            $this->RegisterVariableInteger("volumeDown","volumeDown");
+            $this->EnableAction("volumeDown");
+            $this->SendDebug("CreateVariable", "volumeDown", 0);
+          } else {  
+            $this->UnregisterVariable("volumeDown");
+            $this->SendDebug("DeleteVariable", "volumeDown", 0);
+          } 
+            
+          // Variable mit setVolume anlegen
+          if($this->ReadPropertyBoolean("setVolume")==true) {
+            $this->RegisterVariableString("setVolume","setVolume");
+            $this->SendDebug("CreateVariable", "setVolume", 0);
+          } else {  
+            $this->UnregisterVariable("setVolume");
+            $this->SendDebug("DeleteVariable", "setVolume", 0);
+          } 
+            
+          // Variable mit startApp anlegen
+          if($this->ReadPropertyBoolean("startApp")==true) {
+            $this->RegisterVariableString("startApp","startApp");
+            $this->SendDebug("CreateVariable", "startApp", 0);
+          } else {  
+            $this->UnregisterVariable("startApp");
+            $this->SendDebug("DeleteVariable", "startApp", 0);
+          } 
+            
+          // Variable mit play pause anlegen
+          if($this->ReadPropertyBoolean("play_pause")==true) {
+            $this->RegisterVariableInteger("playpause","playPause");
+            $this->EnableAction("playpause");
+            $this->SendDebug("CreateVariable", "playpause", 0);
+          } else {  
+            $this->UnregisterVariable("playpause");
+            $this->SendDebug("DeleteVariable", "playpause", 0);
+          }            
   
       }
 
@@ -250,7 +318,46 @@
         $this->send_command($command); 
       }     
 
+      public function setVolume(int $volume) 
+      { 
+        $this->lg_handshake();
+        $command = '{"id":"volume","type":"request","uri":"ssap://audio/setVolume","payload":{"volume":"'.$volume.'"}}'; 
+        $this->send_command($command); 
+      } 
 
+
+      public function RequestAction($Ident, $Value) {
+        switch($Ident) {
+          case "mute":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            break;
+          case "turnOff":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            break;
+          case "volumeUp":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            $this->volumeUp();
+            break;
+          case "volumeDown":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            $this->volumeDown();
+            break;
+          case "setVolume":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            break;
+          case "startApp":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            break;
+          case "mute":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            break;
+          case "play_pause":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            break;
+          default:
+            throw new Exception("Invalid Ident");
+        }
+      }
 
       private function hybi10Encode(string $payload, string $type = 'text', bool $masked = true) { 
         $frameHead = array(); 
