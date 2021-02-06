@@ -48,6 +48,11 @@
       "type": "Button",
       "caption": "Handshake",
       "onClick": "LGTV_ConnectForHandshake($id);"
+    },
+    {
+      "type": "Button",
+      "caption": "Send Test Message",
+      "onClick": "LGTV_TestMessage($id);"
     }
   ]
 }

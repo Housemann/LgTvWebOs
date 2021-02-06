@@ -47,7 +47,7 @@
           // Remove variable profiles from this module if there is no instance left
           $InstancesAR = IPS_GetInstanceListByModuleID('{5C50B523-D0E8-C6AC-757F-80D621F7376F}');
           if ((@array_key_exists('0', $InstancesAR) === false) || (@array_key_exists('0', $InstancesAR) === NULL)) {
-              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause');
+              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause','LGTV.Apps');
               foreach ($VarProfileAR as $VarProfileName) {
                   @IPS_DeleteVariableProfile($VarProfileName);
               }
@@ -83,6 +83,7 @@
             $this->DeleteVarProfile("LGTV.turnOff");  
           }
 
+
           // Variable mit volumeUpDown anlegen
           if($this->ReadPropertyBoolean("volumeUpDown")==true) {
             // Create variable profiles
@@ -97,6 +98,7 @@
             $this->DeleteVarProfile("LGTV.volume");      
           }
           
+
           /*
           // Variable mit setVolume anlegen
           if($this->ReadPropertyBoolean("setVolume")==true) {
@@ -106,13 +108,39 @@
           } 
           */
             
-          // Variable mit startApp anlegen
+
+          // Variable mit LgApp anlegen
           if($this->ReadPropertyBoolean("startApp")==true) {
-            $this->Variable_Register("startApp", "Start App", "", "", 1, true,4,true);
+            // Create variable profiles
+            $this->RegisterProfileIntegerEx('LGTV.Apps', '', '', '', Array(
+              Array(0 , 'HDMI-1'				        , '', -1),   			           
+              Array(1 , 'HDMI-2'                , '', -1),
+              Array(2 , 'HDMI-3'                , '', -1),
+              Array(3 , 'HDMI-4'                , '', -1),
+              Array(4 , 'Webbrowser'            , '', -1),
+              Array(5 , 'Geräteanschluss'       , '', -1),
+              Array(6 , 'TV'                    , '', -1),
+              Array(7 , 'TV Guide'              , '', -1),
+              Array(8 , 'Screen Share'          , '', -1),
+              Array(9 , 'Benachrichtigungen'    , '', -1),
+              Array(10, 'Einstellungen'         , '', -1),
+              Array(11, 'Software-Update'       , '', -1),
+              Array(12, 'TV Cast'               , '', -1)
+
+              #Array(4 , 'Heute'                 , '', -1),
+              #Array(5 , 'Amazon Prime Video'    , '', -1),
+              #Array(6 , 'Google Play Filme'     , '', -1),
+              #Array(7 , 'YouTube'               , '', -1),
+              #Array(18, 'Googleplay'            , '', -1),
+              #Array(10, 'SmartShare'            , '', -1),  
+            ));
+
+            $this->Variable_Register("LgApp", "Lg App", "LGTV.Apps", "Remote", 1, true,4,true);
           } else {  
-            $this->Variable_UnRegister("startApp",true); 
+            $this->Variable_UnRegister("LgApp",true); 
           } 
             
+
           // Variable mit play pause anlegen
           if($this->ReadPropertyBoolean("play_pause")==true) {
             // Create variable profiles
@@ -271,22 +299,15 @@
           return $response;
         }  
       } 
-  
-      public function ConnectForHandshake() 
-      {
-        $this->connect();
-        $key = $this->lg_handshake();
-        $this->disconnect();
-        return $key;
-      }
 
+      #########################################################################################################################################
+      //Funktionen zum steuern des Fernsehers 
 
-      //Ab hier können Funktionen hinzugefügt werden 
       public function turnOff() //Einschalten geht nur über WOL! 
       { 
         $this->lg_handshake();
         $command = '{"id":"turnOff","type":"request","uri":"ssap://system/turnOff"}'; 
-        $this->send_command($command); 
+        $this->send_command($command);  
       } 
   
       public function volumeUp() 
@@ -294,6 +315,15 @@
         $this->lg_handshake();
         $command = '{"id":"volumeUp","type":"request","uri":"ssap://audio/volumeUp"}'; 
         $this->send_command($command); 
+      } 
+
+      public function getVolume() 
+      { 
+        $this->lg_handshake();
+        $command = '{"id":"getVolume","type":"request","uri":"ssap://audio/getVolume"}'; 
+        $ret_command = $this->send_command($command); 
+        $value = json_decode($this->json_string($ret_command),true);
+        return $value['payload']['volume'];
       } 
   
       public function volumeDown() 
@@ -307,14 +337,15 @@
       {
         $this->lg_handshake();
         $command = '{"id":"mute","type":"request","uri":"ssap://audio/setMute","payload":{"mute":"'.$mute.'"}}';
-        $this->send_command($command);
+        $this->send_command($command); 
       }
     
       public function message(string $msg)
       {
+        $msg = $this->ConvertMessage($msg);
         $this->lg_handshake();
         $command = '{"id":"message","type":"request","uri":"ssap://system.notifications/createToast","payload":{"message":"'.$msg.'"}}';
-        $this->send_command($command);
+        $this->send_command($command); 
       }
     
       public function startApp(string $app)
@@ -338,14 +369,21 @@
         $this->send_command($command); 
       }     
 
-      /*
       public function setVolume(int $volume) 
       { 
         $this->lg_handshake();
-        $command = '{"id":"setVolume","type":"request","uri":"ssap://audio/setVolume","payload":{"volume":"'.$volume.'"}}';
+        $command = '{"id":"setVolume","type":"request","uri":"ssap://audio/setVolume","payload":{"volume":'.$volume.'}}';
         $this->send_command($command); 
       } 
 
+      public function ownCommand(string $ownCommand) 
+      { 
+        $this->lg_handshake();
+        $ret_command = $this->send_command($ownCommand); 
+        return $ret_command;
+      } 
+
+      /*
       public function getAppState()
       { 
         $this->lg_handshake();
@@ -353,6 +391,34 @@
         $this->send_command($command); 
       } 
       */
+
+      #########################################################################################################################################
+
+      // Test Message über Burron im Konfigurator
+      public function TestMessage() 
+      {
+        $msg = "Das ist ein Test";
+        $this->message($msg);
+      }
+
+      // Funktion für Button im Konfigurator
+      public function ConnectForHandshake() 
+      {
+        $this->connect();
+        $key = $this->lg_handshake();
+        $this->disconnect();
+        return $key;
+      }
+
+      // Funktion für HTML PHP Zeilenumbruch
+      private function ConvertMessage(string $c_msg) 
+      {
+        $ConvertetMeassage = strip_tags($c_msg);
+        $ConvertetMeassage = str_replace(array("\n","  ","<br>","<b>","</b>")," ",$ConvertetMeassage);
+        return $ConvertetMeassage;
+      }
+      #########################################################################################################################################
+
 
       public function RequestAction($Ident, $Value) 
       {
@@ -376,8 +442,11 @@
           #  SetValue($this->GetIDForIdent($Ident), $Value);
           #  $this->setVolume($Value);
           #  break;
-          case "startApp":
+          case "LgApp":
             SetValue($this->GetIDForIdent($Ident), $Value);
+            $app = GetValueFormatted($this->GetIDForIdent($Ident));
+            $lg_app = $this->AppMapping($app);
+            $this->startApp($lg_app);
             break;
           case "play_pause":
             SetValue($this->GetIDForIdent($Ident), $Value);
@@ -388,6 +457,37 @@
             break;
           default:
             throw new Exception("Invalid Ident");
+        }
+      }
+
+      private function AppMapping(string $app) {
+        $array_apps = array(
+          "HDMI-1"              => "com.webos.app.hdmi1",
+          "HDMI-2"              => "com.webos.app.hdmi2",
+          "HDMI-3"              => "com.webos.app.hdmi3",
+          "HDMI-4"              => "com.webos.app.hdmi4",
+          "Webbrowser"          => "com.webos.app.browser",
+          "Geräteanschluss"     => "com.webos.app.connectionwizard",
+          "Screen Share"        => "com.webos.app.miracast",
+          "Benachrichtigungen"  => "com.webos.app.notificationcenter",
+          "Einstellungen"       => "com.palm.app.settings",
+          "Software-Update"     => "com.webos.app.softwareupdate",
+          "TV"                  => "com.webos.app.livetv",
+          "TV Guide"            => "com.webos.app.tvguide"
+
+          #"Heute"               => "com.webos.app.today",
+          #"Amazon Prime Video"  => "lovefilm.de",
+          #"Google Play Filme"   => "googleplaymovieswebos",
+          #"YouTube"             => "youtube.leanback.v4",
+          #"SmartShare"          => "com.webos.app.smartshare",
+          #"TV Cast"             => "de.2kit.castbrowserlg",
+          #"Googleplay"          => "googleplay"
+        );
+      
+        foreach($array_apps as $key => $lg_app) {
+          if($app === $key) {
+            return $lg_app;
+          }
         }
       }
 
