@@ -12,9 +12,9 @@ Das Plex Mediathek Update ließt die Plex Mediatheken aus und speichert diese in
 
 ### 1. Funktionsumfang
 
-* Ermöglicht das Auslesen der eingenen Plex Mediatheken
-* Dazu kann man pro Mediathek das einlesen seiner Plex Filme starten
-* Darstellung und Bedienung via WebFront und mobilen Apps
+* Ermöglicht das Auslesen der Lautstärke vom Fernseher und das setzten einer Lautstärke.
+* Nachrichten an den Fernseher senden.
+* Hinterlegte Apps umschalten.
 
 ### 2. Voraussetzungen
 
@@ -46,17 +46,67 @@ Die Statusvariablen werden bei bedarf über die Checkboxen im Modul automatisch 
 
 ### 6. Funktionen
 
-Hiermit kann man eine Nachricht an den Fernseher für ein PopUp senden.
+Mit dieser Funktion kann man eine Nachricht an den Fernseher für ein PopUp senden.
 ```php
-LGTV_message($Instance,"Das ist eine Test Nachricht")
+LGTV_message($Instance,"Das ist eine Test Nachricht");
 ```
 
-Mit dieser Funktion können alle Aktionen einer Variable ausgelöst werden.
-
-**Beispiel:**
-
-Variable ID Status: 12345
+Mit dieser Funktion kann der Fernseher auf Stumm geschaltet werden.
 ```php
-RequestAction(12345, true); //Einschalten
-RequestAction(12345, false); //Ausschalten
+LGTV_mute($Instance,true);  // Stummschalten
+LGTV_mute($Instance,false); // Stummschaltung aufheben 
 ```
+
+Mit dieser Funktion kann man die Lautstärke rauf und runter stellen.
+```php
+LGTV_volumeDown($Instance);  // Lautstärke runter
+LGTV_volumeUp($Instance);    // Lautstärke raus 
+```
+
+Mit dieser Funktion kann man die aktuelle Lautstärke auslesen.
+```php
+print_r(LGTV_getVolume($Instance)); // Return der aktuellen Lautstärke
+```
+
+Mit dieser Funktion setzt man eine Lautstärke.
+```php
+LGTV_setVolume($Instance,13); // Lautstärke auf z.B. 13 setzen
+```
+
+Mit dieser Funktion schaltet man den Fernseher aus.
+```php
+LGTV_turnOff($Instance);  // Ausschalten
+```
+
+Mit dieser Funktion kann man eine Aufnahme stoppen und wiedergehen (ungetestet).
+```php
+LGTV_pause($Instance);  
+LGTV_play($Instance);
+```
+
+Mit dieser Funktion kann man eine App starten oder die HDMI eingang wechseln.
+```php
+LGTV_startApp($Instance,"com.webos.app.hdmi2");  // Auf HDMI-2 wechseln
+```
+Apps die bisher funktionieren
+```php
+"com.webos.app.hdmi1"
+"com.webos.app.hdmi2"
+"com.webos.app.hdmi3"
+"com.webos.app.hdmi4"
+"com.webos.app.browser"
+"com.webos.app.connectionwizard"
+"com.webos.app.miracast"
+"com.webos.app.notificationcenter"
+"com.palm.app.settings"
+"com.webos.app.softwareupdate"
+"com.webos.app.livetv"
+"com.webos.app.tvguide"
+```
+
+Mit dieser Funktion kann man ein eigenes Request für das WebOs absetzten.
+```php
+$command = '{"id":"volumeUp","type":"request","uri":"ssap://audio/volumeUp"}';
+print_r(LGTV_ownCommand($Instance,$command)); // Return Json
+```
+
