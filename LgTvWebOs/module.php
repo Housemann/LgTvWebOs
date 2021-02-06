@@ -47,7 +47,7 @@
           // Remove variable profiles from this module if there is no instance left
           $InstancesAR = IPS_GetInstanceListByModuleID('{5C50B523-D0E8-C6AC-757F-80D621F7376F}');
           if ((@array_key_exists('0', $InstancesAR) === false) || (@array_key_exists('0', $InstancesAR) === NULL)) {
-              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause','LGTV.Apps','LGTV.volume_intensity');
+              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause','LGTV.Apps','LGTV.volume_intensity','LGTV.turnOff');
               foreach ($VarProfileAR as $VarProfileName) {
                   @IPS_DeleteVariableProfile($VarProfileName);
               }
