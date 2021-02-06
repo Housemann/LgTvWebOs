@@ -1,7 +1,11 @@
 <?php
+
+    require_once __DIR__ . '/../libs/helper_variables.php';
+
     // Klassendefinition
     class LgTvWebOs extends IPSModule {
- 
+
+      use LGTV_HelperVariables;
       
       private $host, $port, $ws_key, $path, $lg_key, $sock, $connected=false, $handshaked=false; 
 
@@ -20,36 +24,143 @@
       
       
       // Überschreibt die interne IPS_Create($id) Funktion
-      public function Create() {
+      public function Create() 
+      {
           // Diese Zeile nicht löschen.
           parent::Create();
 
           $this->RegisterPropertyString ("IPAddress", "1.1.1.1");
           $this->RegisterPropertyString ("LgClientKey","");
 
-          $this->RegisterPropertyBoolean('CheckBox', false);
-          
-          
+          // Propertys
+          $this->RegisterPropertyBoolean('mute', false);
+          $this->RegisterPropertyBoolean('turnOff', false);
+          $this->RegisterPropertyBoolean('volumeUpDown', false);
+          $this->RegisterPropertyBoolean('setVolume', false);
+          $this->RegisterPropertyBoolean('startApp', false);
+          $this->RegisterPropertyBoolean('play_pause', false);
+
       }
 
+      public function Destroy() 
+      {
+          // Remove variable profiles from this module if there is no instance left
+          $InstancesAR = IPS_GetInstanceListByModuleID('{5C50B523-D0E8-C6AC-757F-80D621F7376F}');
+          if ((@array_key_exists('0', $InstancesAR) === false) || (@array_key_exists('0', $InstancesAR) === NULL)) {
+              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause','LGTV.Apps');
+              foreach ($VarProfileAR as $VarProfileName) {
+                  @IPS_DeleteVariableProfile($VarProfileName);
+              }
+          }
+          parent::Destroy();
+      }
+  
+
       // Überschreibt die intere IPS_ApplyChanges($id) Funktion
-      public function ApplyChanges() {
+      public function ApplyChanges() 
+      {
           // Diese Zeile nicht löschen
           parent::ApplyChanges();
 
           // Variable mit Mute anlegen
-          if($this->ReadPropertyBoolean("CheckBox")==true)
-            $this->RegisterVariableBoolean("Mute","Mute","~Switch");
-          else 
-            $this->UnregisterVariable("Mute");
+          if($this->ReadPropertyBoolean("mute")==true) {
+            $this->Variable_Register("mute", "Mute", "~Switch", "", 0, true,2,true);
+          } else { 
+            $this->Variable_UnRegister("mute",true);
+          }
 
           
+          // Variable mit turnOff anlegen
+          if($this->ReadPropertyBoolean("turnOff")==true) { 
+            // Create variable profiles
+            $this->RegisterProfileBooleanEx('LGTV.turnOff', 'Power', '', '', Array(
+              Array(true, 'Turn Off', '', 0x00FF00)
+              ));
+
+            $this->Variable_Register("turnOff", "Turn Off", "LGTV.turnOff", "", 0, true,1,true);
+          } else {  
+            $this->Variable_UnRegister("turnOff",true);
+            $this->DeleteVarProfile("LGTV.turnOff");  
+          }
+
+
+          // Variable mit volumeUpDown anlegen
+          if($this->ReadPropertyBoolean("volumeUpDown")==true) {
+            // Create variable profiles
+            $this->RegisterProfileBooleanEx('LGTV.volume', 'Speaker', '', '', Array(
+              Array(false, 'VolumeUp', '', 0xFF0000),
+              Array(true, 'VolumeDown', '', 0x00FF00)
+              ));
+  
+            $this->Variable_Register("volumeUpDown", "Volume + / -", "LGTV.volume", "", 0, true,3,true);
+          } else {   
+            $this->Variable_UnRegister("volumeUpDown",true);    
+            $this->DeleteVarProfile("LGTV.volume");      
+          }
+          
+
+          /*
+          // Variable mit setVolume anlegen
+          if($this->ReadPropertyBoolean("setVolume")==true) {
+            $this->Variable_Register("setVolume", "Set Volume", "", "", 1, true,false,true);
+          } else {  
+            $this->Variable_UnRegister("setVolume",true); 
+          } 
+          */
+            
+
+          // Variable mit LgApp anlegen
+          if($this->ReadPropertyBoolean("startApp")==true) {
+            // Create variable profiles
+            $this->RegisterProfileIntegerEx('LGTV.Apps', '', '', '', Array(
+              Array(0 , 'HDMI-1'				        , '', -1),   			           
+              Array(1 , 'HDMI-2'                , '', -1),
+              Array(2 , 'HDMI-3'                , '', -1),
+              Array(3 , 'HDMI-4'                , '', -1),
+              Array(4 , 'Webbrowser'            , '', -1),
+              Array(5 , 'Geräteanschluss'       , '', -1),
+              Array(6 , 'TV'                    , '', -1),
+              Array(7 , 'TV Guide'              , '', -1),
+              Array(8 , 'Screen Share'          , '', -1),
+              Array(9 , 'Benachrichtigungen'    , '', -1),
+              Array(10, 'Einstellungen'         , '', -1),
+              Array(11, 'Software-Update'       , '', -1),
+              Array(12, 'TV Cast'               , '', -1)
+
+              #Array(4 , 'Heute'                 , '', -1),
+              #Array(5 , 'Amazon Prime Video'    , '', -1),
+              #Array(6 , 'Google Play Filme'     , '', -1),
+              #Array(7 , 'YouTube'               , '', -1),
+              #Array(18, 'Googleplay'            , '', -1),
+              #Array(10, 'SmartShare'            , '', -1),  
+            ));
+
+            $this->Variable_Register("LgApp", "Lg App", "LGTV.Apps", "Remote", 1, true,4,true);
+          } else {  
+            $this->Variable_UnRegister("LgApp",true); 
+          } 
+            
+
+          // Variable mit play pause anlegen
+          if($this->ReadPropertyBoolean("play_pause")==true) {
+            // Create variable profiles
+            $this->RegisterProfileBooleanEx('LGTV.playPause', 'Repeat', '', '', Array(
+              Array(false, 'Play', '', 0xFF0000),
+              Array(true, 'Pause', '', 0x00FF00)
+              ));
+
+            $this->Variable_Register("playpause", "Play / Pause", "LGTV.playPause", "", 0, true,5,true);
+          } else {  
+            $this->Variable_UnRegister("playpause",true); 
+            $this->DeleteVarProfile("LGTV.playPause");
+          }       
   
       }
 
 
 
-      private function connect() { 
+      private function connect() 
+      { 
         $this->host = $this->ReadPropertyString("IPAddress");
         $this->port = 3000;  
         $this->lg_key = $lgKey="NOKEY"; 
@@ -132,6 +243,7 @@
                       $this->lg_key = $result['payload']['client-key']; 
                       echo "LG Client-Key successfully received: $this->lg_key\n";  
                       IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully received: $this->lg_key\n");
+                      $this->UpdateFormField("LgClientKey", "value", $this->lg_key);
                       return $this->lg_key;
                     }  
                     else if ($result && array_key_exists('id',$result) &&  $result['id']=='register_0' && array_key_exists('error',$result)) 
@@ -154,21 +266,24 @@
         else return FALSE;  
       }
       
-      private function disconnect() {  
+      private function disconnect() 
+      {  
         $this->connected=false; 
         @fclose($this->sock); 
         #echo "Connection closed to $this->host\n";
         IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Connection closed to $this->host\n");
       } 
   
-      private function send(string $msg) { 
+      private function send(string $msg) 
+      { 
         @fwrite($this->sock, $msg); 
         usleep(250000); 
         $response = @fread($this->sock, 8192); 
         return $response; 
       } 
        
-      private function send_command(string $cmd) { 
+      private function send_command(string $cmd)
+      { 
         if (!$this->connected) $this->connect(); 
         if ($this->connected) 
         { 
@@ -181,24 +296,18 @@
           else  
             #echo "Error sending command: $cmd\n"; 
             IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Error sending command: $cmd\n");
-          return $response;             
+          return $response;
         }  
       } 
-  
-      public function ConnectForHandshake() {
-        $this->connect();
-        $key = $this->lg_handshake();
-        $this->disconnect();
-        return $key;
-      }
 
+      #########################################################################################################################################
+      //Funktionen zum steuern des Fernsehers 
 
-      //Ab hier können Funktionen hinzugefügt werden 
       public function turnOff() //Einschalten geht nur über WOL! 
       { 
         $this->lg_handshake();
         $command = '{"id":"turnOff","type":"request","uri":"ssap://system/turnOff"}'; 
-        $this->send_command($command); 
+        $this->send_command($command);  
       } 
   
       public function volumeUp() 
@@ -206,6 +315,15 @@
         $this->lg_handshake();
         $command = '{"id":"volumeUp","type":"request","uri":"ssap://audio/volumeUp"}'; 
         $this->send_command($command); 
+      } 
+
+      public function getVolume() 
+      { 
+        $this->lg_handshake();
+        $command = '{"id":"getVolume","type":"request","uri":"ssap://audio/getVolume"}'; 
+        $ret_command = $this->send_command($command); 
+        $value = json_decode($this->json_string($ret_command),true);
+        return $value['payload']['volume'];
       } 
   
       public function volumeDown() 
@@ -219,14 +337,15 @@
       {
         $this->lg_handshake();
         $command = '{"id":"mute","type":"request","uri":"ssap://audio/setMute","payload":{"mute":"'.$mute.'"}}';
-        $this->send_command($command);
+        $this->send_command($command); 
       }
     
       public function message(string $msg)
       {
+        $msg = $this->ConvertMessage($msg);
         $this->lg_handshake();
         $command = '{"id":"message","type":"request","uri":"ssap://system.notifications/createToast","payload":{"message":"'.$msg.'"}}';
-        $this->send_command($command);
+        $this->send_command($command); 
       }
     
       public function startApp(string $app)
@@ -250,9 +369,135 @@
         $this->send_command($command); 
       }     
 
+      public function setVolume(int $volume) 
+      { 
+        $this->lg_handshake();
+        $command = '{"id":"setVolume","type":"request","uri":"ssap://audio/setVolume","payload":{"volume":'.$volume.'}}';
+        $this->send_command($command); 
+      } 
+
+      public function ownCommand(string $ownCommand) 
+      { 
+        $this->lg_handshake();
+        $ret_command = $this->send_command($ownCommand); 
+        return $ret_command;
+      } 
+
+      /*
+      public function getAppState()
+      { 
+        $this->lg_handshake();
+        $command = '{"id":"title","type":"request","uri":"luna://com.webos.service.applicationmanager","payload":"launchPoints[]"}';
+        $this->send_command($command); 
+      } 
+      */
+
+      #########################################################################################################################################
+
+      // Test Message über Burron im Konfigurator
+      public function TestMessage() 
+      {
+        $msg = "Das ist ein Test";
+        $this->message($msg);
+      }
+
+      // Funktion für Button im Konfigurator
+      public function ConnectForHandshake() 
+      {
+        $this->connect();
+        $key = $this->lg_handshake();
+        $this->disconnect();
+        return $key;
+      }
+
+      // Funktion für HTML PHP Zeilenumbruch
+      private function ConvertMessage(string $c_msg) 
+      {
+        $ConvertetMeassage = strip_tags($c_msg);
+        $ConvertetMeassage = str_replace(array("\n","  ","<br>","<b>","</b>")," ",$ConvertetMeassage);
+        return $ConvertetMeassage;
+      }
+      #########################################################################################################################################
 
 
-      private function hybi10Encode(string $payload, string $type = 'text', bool $masked = true) { 
+      public function RequestAction($Ident, $Value) 
+      {
+        switch($Ident) {
+          case "mute":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            $this->mute($Value);
+            break;
+          case "turnOff":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            $this->turnOff();
+            break;
+          case "volumeUpDown":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            if($Value==0)
+              $this->volumeUp();
+            else
+              $this->volumeDown();
+            break;
+          #case "setVolume":
+          #  SetValue($this->GetIDForIdent($Ident), $Value);
+          #  $this->setVolume($Value);
+          #  break;
+          case "LgApp":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            $app = GetValueFormatted($this->GetIDForIdent($Ident));
+            $lg_app = $this->AppMapping($app);
+            $this->startApp($lg_app);
+            break;
+          case "play_pause":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            if($Value==0)
+              $this->play();
+            else
+              $this->pause();
+            break;
+          default:
+            throw new Exception("Invalid Ident");
+        }
+      }
+
+      private function AppMapping(string $app) {
+        $array_apps = array(
+          "HDMI-1"              => "com.webos.app.hdmi1",
+          "HDMI-2"              => "com.webos.app.hdmi2",
+          "HDMI-3"              => "com.webos.app.hdmi3",
+          "HDMI-4"              => "com.webos.app.hdmi4",
+          "Webbrowser"          => "com.webos.app.browser",
+          "Geräteanschluss"     => "com.webos.app.connectionwizard",
+          "Screen Share"        => "com.webos.app.miracast",
+          "Benachrichtigungen"  => "com.webos.app.notificationcenter",
+          "Einstellungen"       => "com.palm.app.settings",
+          "Software-Update"     => "com.webos.app.softwareupdate",
+          "TV"                  => "com.webos.app.livetv",
+          "TV Guide"            => "com.webos.app.tvguide"
+
+          #"Heute"               => "com.webos.app.today",
+          #"Amazon Prime Video"  => "lovefilm.de",
+          #"Google Play Filme"   => "googleplaymovieswebos",
+          #"YouTube"             => "youtube.leanback.v4",
+          #"SmartShare"          => "com.webos.app.smartshare",
+          #"TV Cast"             => "de.2kit.castbrowserlg",
+          #"Googleplay"          => "googleplay"
+        );
+      
+        foreach($array_apps as $key => $lg_app) {
+          if($app === $key) {
+            return $lg_app;
+          }
+        }
+      }
+
+      private function DeleteVarProfile(string $VarProfileName) 
+      {
+        @IPS_DeleteVariableProfile($VarProfileName);
+      }
+
+      private function hybi10Encode(string $payload, string $type = 'text', bool $masked = true) 
+      { 
         $frameHead = array(); 
         $frame = ''; 
         $payloadLength = strlen($payload); 

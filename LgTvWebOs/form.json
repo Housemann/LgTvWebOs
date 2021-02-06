@@ -8,7 +8,8 @@
       {
         "type": "ValidationTextBox",
         "name": "LgClientKey",
-        "caption": "Lg Client Key"
+        "caption": "Lg Client Key",
+        "value": ""
       },
       {
         "type": "Label"
@@ -18,8 +19,28 @@
       },
       {
         "type": "CheckBox",
-        "caption": "Mute Button erstellen",
-        "name": "CheckBox"
+        "caption": "Create Mute Button",
+        "name": "mute"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create TurnOff Button",
+        "name": "turnOff"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create volumeUpDown Button",
+        "name": "volumeUpDown"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create startApp Button",
+        "name": "startApp"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create PlayPause Button",
+        "name": "play_pause"
       }
   ],
   "actions": [
@@ -27,6 +48,11 @@
       "type": "Button",
       "caption": "Handshake",
       "onClick": "LGTV_ConnectForHandshake($id);"
+    },
+    {
+      "type": "Button",
+      "caption": "Send Test Message",
+      "onClick": "LGTV_TestMessage($id);"
     }
   ]
 }
