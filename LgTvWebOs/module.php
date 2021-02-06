@@ -47,7 +47,7 @@
           // Remove variable profiles from this module if there is no instance left
           $InstancesAR = IPS_GetInstanceListByModuleID('{5C50B523-D0E8-C6AC-757F-80D621F7376F}');
           if ((@array_key_exists('0', $InstancesAR) === false) || (@array_key_exists('0', $InstancesAR) === NULL)) {
-              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause','LGTV.Apps');
+              $VarProfileAR = array('LGTV.volume', 'LGTV.playPause','LGTV.Apps','LGTV.volume_intensity');
               foreach ($VarProfileAR as $VarProfileName) {
                   @IPS_DeleteVariableProfile($VarProfileName);
               }
@@ -64,7 +64,7 @@
 
           // Variable mit Mute anlegen
           if($this->ReadPropertyBoolean("mute")==true) {
-            $this->Variable_Register("mute", "Mute", "~Switch", "", 0, true,2,true);
+            $this->Variable_Register("mute", $this->translate("Mute"), "~Switch", "", 0, true,2,true);
           } else { 
             $this->Variable_UnRegister("mute",true);
           }
@@ -77,7 +77,7 @@
               Array(true, 'Turn Off', '', 0x00FF00)
               ));
 
-            $this->Variable_Register("turnOff", "Turn Off", "LGTV.turnOff", "", 0, true,1,true);
+            $this->Variable_Register("turnOff", $this->translate("Turn Off"), "LGTV.turnOff", "", 0, true,1,true);
           } else {  
             $this->Variable_UnRegister("turnOff",true);
             $this->DeleteVarProfile("LGTV.turnOff");  
@@ -92,21 +92,23 @@
               Array(true, 'VolumeDown', '', 0x00FF00)
               ));
   
-            $this->Variable_Register("volumeUpDown", "Volume + / -", "LGTV.volume", "", 0, true,3,true);
+            $this->Variable_Register("volumeUpDown", $this->translate("Volume + / -"), "LGTV.volume", "", 0, true,3,true);
           } else {   
             $this->Variable_UnRegister("volumeUpDown",true);    
             $this->DeleteVarProfile("LGTV.volume");      
           }
           
 
-          /*
           // Variable mit setVolume anlegen
           if($this->ReadPropertyBoolean("setVolume")==true) {
-            $this->Variable_Register("setVolume", "Set Volume", "", "", 1, true,false,true);
+            // Create Variable Profile 
+            $this->RegisterProfileInteger('LGTV.volume_intensity', 'Intensity', "", " %", 0, 100, 1);
+
+            $this->Variable_Register("setVolume", $this->translate("Set Volume"), "LGTV.volume_intensity", "", 1, true,4,true);
           } else {  
             $this->Variable_UnRegister("setVolume",true); 
           } 
-          */
+          
             
 
           // Variable mit LgApp anlegen
@@ -118,12 +120,12 @@
               Array(2 , 'HDMI-3'                , '', -1),
               Array(3 , 'HDMI-4'                , '', -1),
               Array(4 , 'Webbrowser'            , '', -1),
-              Array(5 , 'Geräteanschluss'       , '', -1),
+              Array(5 , $this->translate('Device connection') , '', -1),
               Array(6 , 'TV'                    , '', -1),
               Array(7 , 'TV Guide'              , '', -1),
               Array(8 , 'Screen Share'          , '', -1),
-              Array(9 , 'Benachrichtigungen'    , '', -1),
-              Array(10, 'Einstellungen'         , '', -1),
+              Array(9 , $this->translate('Notifications') , '', -1),
+              Array(10, $this->translate('Settings') , '', -1),
               Array(11, 'Software-Update'       , '', -1),
               Array(12, 'TV Cast'               , '', -1)
 
@@ -135,7 +137,7 @@
               #Array(10, 'SmartShare'            , '', -1),  
             ));
 
-            $this->Variable_Register("LgApp", "Lg App", "LGTV.Apps", "Remote", 1, true,4,true);
+            $this->Variable_Register("LgApp", "Lg App", "LGTV.Apps", "Remote", 1, true,5,true);
           } else {  
             $this->Variable_UnRegister("LgApp",true); 
           } 
@@ -149,7 +151,7 @@
               Array(true, 'Pause', '', 0x00FF00)
               ));
 
-            $this->Variable_Register("playpause", "Play / Pause", "LGTV.playPause", "", 0, true,5,true);
+            $this->Variable_Register("playpause", $this->translate("Play / Pause"), "LGTV.playPause", "", 0, true,6,true);
           } else {  
             $this->Variable_UnRegister("playpause",true); 
             $this->DeleteVarProfile("LGTV.playPause");
@@ -243,6 +245,8 @@
                       $this->lg_key = $result['payload']['client-key']; 
                       echo "LG Client-Key successfully received: $this->lg_key\n";  
                       IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully received: $this->lg_key\n");
+                      
+                      // Key ins Formularfeld eintragen 
                       $this->UpdateFormField("LgClientKey", "value", $this->lg_key);
                       return $this->lg_key;
                     }  
@@ -397,7 +401,7 @@
       // Test Message über Burron im Konfigurator
       public function TestMessage() 
       {
-        $msg = "Das ist ein Test";
+        $msg = $this->translate("This is a test");
         $this->message($msg);
       }
 
@@ -437,11 +441,20 @@
               $this->volumeUp();
             else
               $this->volumeDown();
+
+            // Mute auf false setzen wenn Lautstärke gedrückt wird
+            SetValue($this->GetIDForIdent("mute"), false);
+
+            // Volume holen und in setVolume schreiben
+            SetValue($this->GetIDForIdent("setVolume"), $this->getVolume());
             break;
-          #case "setVolume":
-          #  SetValue($this->GetIDForIdent($Ident), $Value);
-          #  $this->setVolume($Value);
-          #  break;
+          case "setVolume":
+            SetValue($this->GetIDForIdent($Ident), $Value);
+            $this->setVolume($Value);
+
+            // Mute auf false setzen wenn Lautstärke gedrückt wird
+            SetValue($this->GetIDForIdent("mute"), false);
+            break;
           case "LgApp":
             SetValue($this->GetIDForIdent($Ident), $Value);
             $app = GetValueFormatted($this->GetIDForIdent($Ident));
@@ -467,10 +480,10 @@
           "HDMI-3"              => "com.webos.app.hdmi3",
           "HDMI-4"              => "com.webos.app.hdmi4",
           "Webbrowser"          => "com.webos.app.browser",
-          "Geräteanschluss"     => "com.webos.app.connectionwizard",
+          $this->translate('Device connection')     => "com.webos.app.connectionwizard",
           "Screen Share"        => "com.webos.app.miracast",
-          "Benachrichtigungen"  => "com.webos.app.notificationcenter",
-          "Einstellungen"       => "com.palm.app.settings",
+          $this->translate('Notifications')  => "com.webos.app.notificationcenter",
+          $this->translate('Settings')       => "com.palm.app.settings",
           "Software-Update"     => "com.webos.app.softwareupdate",
           "TV"                  => "com.webos.app.livetv",
           "TV Guide"            => "com.webos.app.tvguide"

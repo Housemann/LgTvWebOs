@@ -3,7 +3,7 @@
       { 
         "type": "ValidationTextBox", 
         "name": "IPAddress", 
-        "caption": "Lg IP-Adress" 
+        "caption": "Lg Tv IP-Adress" 
       },
       {
         "type": "ValidationTextBox",
@@ -19,18 +19,23 @@
       },
       {
         "type": "CheckBox",
-        "caption": "Create Mute Button",
-        "name": "mute"
-      },
-      {
-        "type": "CheckBox",
         "caption": "Create TurnOff Button",
         "name": "turnOff"
       },
       {
         "type": "CheckBox",
+        "caption": "Create Mute Button",
+        "name": "mute"
+      },
+      {
+        "type": "CheckBox",
         "caption": "Create volumeUpDown Button",
         "name": "volumeUpDown"
+      },
+      {
+        "type": "CheckBox",
+        "caption": "Create volume slider",
+        "name": "setVolume"
       },
       {
         "type": "CheckBox",
