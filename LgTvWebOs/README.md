@@ -29,7 +29,6 @@ Das Plex Mediathek Update ließt die Plex Mediatheken aus und speichert diese in
 
 - Unter "Instanz hinzufügen" kann das 'Lg Tv Web Os'-Modul mithilfe des Schnellfilters gefunden werden.
     - Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
-__Konfigurationsseite__:
 
 ### 5. Statusvariablen und Profile
 
