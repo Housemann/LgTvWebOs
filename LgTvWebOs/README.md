@@ -31,6 +31,10 @@ Das Plex Mediathek Update ließt die Plex Mediatheken aus und speichert diese in
     - Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
 __Konfigurationsseite__:
 
+### 5. Statusvariablen und Profile
+
+Die Statusvariablen werden bei bedarf über die Checkboxen im Modul automatisch angelegt.
+
 Name           | VariableTyp | Beschreibung
 -------------- | ----------- | ---------------------
 Ausschalten    | (bool)      | Zum Ausschalten des Fernsehers (Einschalten nur über WOL möglich)
@@ -39,10 +43,6 @@ Lautstärke +-  | (bool)      | Lautstärke raus / runter
 Lautstärke     | (integer)   | Lautstärke slider
 Lg App         | (integer)   | App auswahl zum wechseln der HDMI eingänge oder zum starten einer App (z.B. Netflix)
 Play Pause     | (bool)      | Play Pause Button
-
-### 5. Statusvariablen und Profile
-
-Die Statusvariablen werden bei bedarf über die Checkboxen im Modul automatisch angelegt.
 
 ### 6. Funktionen
 
