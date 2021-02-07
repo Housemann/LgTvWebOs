@@ -19,6 +19,7 @@ Das Plex Mediathek Update ließt die Plex Mediatheken aus und speichert diese in
 ### 2. Voraussetzungen
 
 - IP-Symcon ab Version 5.5
+- Web OS Version ab 5 (getestet)
 
 ### 3. Software-Installation
 
