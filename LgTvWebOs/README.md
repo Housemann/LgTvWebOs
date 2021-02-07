@@ -28,6 +28,10 @@ Das Plex Mediathek Update ließt die Plex Mediatheken aus und speichert diese in
 ### 4. Einrichten der Instanzen in IP-Symcon
 
 - Unter "Instanz hinzufügen" kann das 'Lg Tv Web Os'-Modul mithilfe des Schnellfilters gefunden werden.
+    - IP Adresse vom Fernseher hinzufügen und übernehmen. 
+    - Auf Handshake klicken.
+    - Am Fernseher Meldung bestätigen ob man die Verbindung zulassen will. 
+    - In IPS das PopUp mit OK bestätigen und im Modul auf übernehmen klicken (Token wird automatisch hinterlegt).
     - Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
 
 ### 5. Statusvariablen und Profile
