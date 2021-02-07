@@ -62,14 +62,6 @@
           // Diese Zeile nicht löschen
           parent::ApplyChanges();
 
-          // Variable mit Mute anlegen
-          if($this->ReadPropertyBoolean("mute")==true) {
-            $this->Variable_Register("mute", $this->translate("Mute"), "~Switch", "", 0, true,2,true);
-          } else { 
-            $this->Variable_UnRegister("mute",true);
-          }
-
-          
           // Variable mit turnOff anlegen
           if($this->ReadPropertyBoolean("turnOff")==true) { 
             // Create variable profiles
@@ -83,6 +75,12 @@
             $this->DeleteVarProfile("LGTV.turnOff");  
           }
 
+          // Variable mit Mute anlegen
+          if($this->ReadPropertyBoolean("mute")==true) {
+            $this->Variable_Register("mute", $this->translate("Mute"), "~Switch", "Speaker", 0, true,2,true);
+          } else { 
+            $this->Variable_UnRegister("mute",true);
+          }
 
           // Variable mit volumeUpDown anlegen
           if($this->ReadPropertyBoolean("volumeUpDown")==true) {
@@ -141,6 +139,7 @@
             $this->Variable_Register("LgApp", "Lg App", "LGTV.Apps", "Remote", 1, true,5,true);
           } else {  
             $this->Variable_UnRegister("LgApp",true); 
+            $this->DeleteVarProfile("LGTV.Apps");
           } 
             
 
@@ -178,31 +177,36 @@
         $ws_handshake_cmd.= "Sec-WebSocket-Version: 13\r\n";             
         $ws_handshake_cmd.= "Sec-WebSocket-Key: " . $this->ws_key . "\r\n"; 
         $ws_handshake_cmd.= "Host: ".$this->host.":".$this->port."\r\n\r\n"; 
-        $this->sock = fsockopen($this->host, $this->port, $errno, $errstr, 2); 
-        socket_set_timeout($this->sock, 0, 10000); 
-        #echo     "Sending WS handshake\n$ws_handshake_cmd\n"; 
-        IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending WS handshake\n$ws_handshake_cmd\n");
-        $response = $this->send($ws_handshake_cmd); 
-        if ($response) 
-        { 
-            #echo "WS Handshake Response:\n$response\n";
-            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","WS Handshake Response:\n$response\n");
-        }  
-        else  
-        #echo "ERROR during WS handshake!\n"; 
-        IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR during WS handshake!\n");
-        preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches); 
-        if ($matches)  
-            { 
-            $keyAccept = trim($matches[1]); 
-            $expectedResonse = base64_encode(pack('H*', sha1($this->ws_key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'))); 
-            $this->connected = ($keyAccept === $expectedResonse) ? true : false; 
-            }  
-        else $this->connected=false; 
-        if ($this->connected) 
-            #echo "Sucessfull WS connection to $this->host:$this->port\n\n"; 
-            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sucessfull WS connection to $this->host:$this->port\n\n");
-        return $this->connected;   
+        $this->sock = @fsockopen($this->host, $this->port, $errno, $errstr, 2); 
+        @socket_set_timeout($this->sock, 0, 10000); 
+        if($errno==0) {  
+          #echo     "Sending WS handshake\n$ws_handshake_cmd\n"; 
+          IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending WS handshake\n$ws_handshake_cmd\n");
+          $response = $this->send($ws_handshake_cmd); 
+          if ($response) 
+          { 
+              #echo "WS Handshake Response:\n$response\n";
+              IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","WS Handshake Response:\n$response\n");
+          }  
+          else  
+          #echo "ERROR during WS handshake!\n"; 
+          IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR during WS handshake!\n");
+          preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches); 
+          if ($matches)  
+              { 
+              $keyAccept = trim($matches[1]); 
+              $expectedResonse = base64_encode(pack('H*', sha1($this->ws_key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'))); 
+              $this->connected = ($keyAccept === $expectedResonse) ? true : false; 
+              }  
+          else $this->connected=false; 
+          if ($this->connected) 
+              #echo "Sucessfull WS connection to $this->host:$this->port\n\n"; 
+              IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sucessfull WS connection to $this->host:$this->port\n\n");
+          return $this->connected;   
+        } else {
+            echo "$errstr ($errno)";
+            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'] .")","$errstr ($errno)");
+        }
       } 
        
       private function lg_handshake() 
@@ -462,7 +466,7 @@
             $lg_app = $this->AppMapping($app);
             $this->startApp($lg_app);
             break;
-          case "play_pause":
+          case "playpause":
             SetValue($this->GetIDForIdent($Ident), $Value);
             if($Value==0)
               $this->play();
