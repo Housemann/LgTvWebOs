@@ -8,7 +8,7 @@ Das Plex Mediathek Update ließt die Plex Mediatheken aus und speichert diese in
 3. [Software-Installation](#3-software-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [Funktionen](#2-funktionen)
+6. [Funktionen](#6-funktionen)
 
 ### 1. Funktionsumfang
 

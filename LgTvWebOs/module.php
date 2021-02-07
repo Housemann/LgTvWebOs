@@ -95,7 +95,7 @@
             $this->Variable_Register("volumeUpDown", $this->translate("Volume + / -"), "LGTV.volume", "", 0, true,3,true);
           } else {   
             $this->Variable_UnRegister("volumeUpDown",true);    
-            $this->DeleteVarProfile("LGTV.volume");      
+            $this->DeleteVarProfile("LGTV.volume");
           }
           
 
@@ -107,6 +107,7 @@
             $this->Variable_Register("setVolume", $this->translate("Set Volume"), "LGTV.volume_intensity", "", 1, true,4,true);
           } else {  
             $this->Variable_UnRegister("setVolume",true); 
+            $this->DeleteVarProfile("LGTV.volume_intensity");
           } 
           
             
@@ -115,26 +116,26 @@
           if($this->ReadPropertyBoolean("startApp")==true) {
             // Create variable profiles
             $this->RegisterProfileIntegerEx('LGTV.Apps', '', '', '', Array(
-              Array(0 , 'HDMI-1'				        , '', -1),   			           
-              Array(1 , 'HDMI-2'                , '', -1),
-              Array(2 , 'HDMI-3'                , '', -1),
-              Array(3 , 'HDMI-4'                , '', -1),
-              Array(4 , 'Webbrowser'            , '', -1),
+              Array(0 , 'HDMI-1'				                      , '', -1),   			           
+              Array(1 , 'HDMI-2'                              , '', -1),
+              Array(2 , 'HDMI-3'                              , '', -1),
+              Array(3 , 'HDMI-4'                              , '', -1),
+              Array(4 , 'Webbrowser'                          , '', -1),
               Array(5 , $this->translate('Device connection') , '', -1),
-              Array(6 , 'TV'                    , '', -1),
-              Array(7 , 'TV Guide'              , '', -1),
-              Array(8 , 'Screen Share'          , '', -1),
-              Array(9 , $this->translate('Notifications') , '', -1),
-              Array(10, $this->translate('Settings') , '', -1),
-              Array(11, 'Software-Update'       , '', -1),
-              Array(12, 'TV Cast'               , '', -1)
+              Array(6 , 'TV'                                  , '', -1),
+              Array(7 , 'TV Guide'                            , '', -1),
+              Array(8 , 'Screen Share'                        , '', -1),
+              Array(9 , $this->translate('Notifications')     , '', -1),
+              Array(10, $this->translate('Settings')          , '', -1),
+              Array(11, 'Software-Update'                     , '', -1),
+              Array(12, 'TV Cast'                             , '', -1)
 
-              #Array(4 , 'Heute'                 , '', -1),
-              #Array(5 , 'Amazon Prime Video'    , '', -1),
-              #Array(6 , 'Google Play Filme'     , '', -1),
-              #Array(7 , 'YouTube'               , '', -1),
-              #Array(18, 'Googleplay'            , '', -1),
-              #Array(10, 'SmartShare'            , '', -1),  
+              #Array(4 , 'Heute'                              , '', -1),
+              #Array(5 , 'Amazon Prime Video'                 , '', -1),
+              #Array(6 , 'Google Play Filme'                  , '', -1),
+              #Array(7 , 'YouTube'                            , '', -1),
+              #Array(18, 'Googleplay'                         , '', -1),
+              #Array(10, 'SmartShare'                         , '', -1),  
             ));
 
             $this->Variable_Register("LgApp", "Lg App", "LGTV.Apps", "Remote", 1, true,5,true);
@@ -475,26 +476,26 @@
 
       private function AppMapping(string $app) {
         $array_apps = array(
-          "HDMI-1"              => "com.webos.app.hdmi1",
-          "HDMI-2"              => "com.webos.app.hdmi2",
-          "HDMI-3"              => "com.webos.app.hdmi3",
-          "HDMI-4"              => "com.webos.app.hdmi4",
-          "Webbrowser"          => "com.webos.app.browser",
-          $this->translate('Device connection')     => "com.webos.app.connectionwizard",
-          "Screen Share"        => "com.webos.app.miracast",
-          $this->translate('Notifications')  => "com.webos.app.notificationcenter",
-          $this->translate('Settings')       => "com.palm.app.settings",
-          "Software-Update"     => "com.webos.app.softwareupdate",
-          "TV"                  => "com.webos.app.livetv",
-          "TV Guide"            => "com.webos.app.tvguide"
+          "HDMI-1"                              => "com.webos.app.hdmi1",
+          "HDMI-2"                              => "com.webos.app.hdmi2",
+          "HDMI-3"                              => "com.webos.app.hdmi3",
+          "HDMI-4"                              => "com.webos.app.hdmi4",
+          "Webbrowser"                          => "com.webos.app.browser",
+          $this->translate('Device connection') => "com.webos.app.connectionwizard",
+          "Screen Share"                        => "com.webos.app.miracast",
+          $this->translate('Notifications')     => "com.webos.app.notificationcenter",
+          $this->translate('Settings')          => "com.palm.app.settings",
+          "Software-Update"                     => "com.webos.app.softwareupdate",
+          "TV"                                  => "com.webos.app.livetv",
+          "TV Guide"                            => "com.webos.app.tvguide"
 
-          #"Heute"               => "com.webos.app.today",
-          #"Amazon Prime Video"  => "lovefilm.de",
-          #"Google Play Filme"   => "googleplaymovieswebos",
-          #"YouTube"             => "youtube.leanback.v4",
-          #"SmartShare"          => "com.webos.app.smartshare",
-          #"TV Cast"             => "de.2kit.castbrowserlg",
-          #"Googleplay"          => "googleplay"
+          #"Heute"                              => "com.webos.app.today",
+          #"Amazon Prime Video"                 => "lovefilm.de",
+          #"Google Play Filme"                  => "googleplaymovieswebos",
+          #"YouTube"                            => "youtube.leanback.v4",
+          #"SmartShare"                         => "com.webos.app.smartshare",
+          #"TV Cast"                            => "de.2kit.castbrowserlg",
+          #"Googleplay"                         => "googleplay"
         );
       
         foreach($array_apps as $key => $lg_app) {
