@@ -181,16 +181,19 @@
         @socket_set_timeout($this->sock, 0, 10000); 
         if($errno==0) {  
           #echo     "Sending WS handshake\n$ws_handshake_cmd\n"; 
-          IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending WS handshake\n$ws_handshake_cmd\n");
+          #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending WS handshake\n$ws_handshake_cmd\n");
+          $this->SendDebug(__FUNCTION__, "Sending WS handshake\n$ws_handshake_cmd\n", 0);
           $response = $this->send($ws_handshake_cmd); 
           if ($response) 
           { 
               #echo "WS Handshake Response:\n$response\n";
-              IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","WS Handshake Response:\n$response\n");
+              #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","WS Handshake Response:\n$response\n");
+              $this->SendDebug(__FUNCTION__, "WS Handshake Response:\n$response\n", 0);
           }  
           else  
           #echo "ERROR during WS handshake!\n"; 
-          IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR during WS handshake!\n");
+          #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR during WS handshake!\n");
+          $this->SendDebug(__FUNCTION__, "ERROR during WS handshake!\n", 0);
           preg_match('#Sec-WebSocket-Accept:\s(.*)$#mU', $response, $matches); 
           if ($matches)  
               { 
@@ -201,11 +204,13 @@
           else $this->connected=false; 
           if ($this->connected) 
               #echo "Sucessfull WS connection to $this->host:$this->port\n\n"; 
-              IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sucessfull WS connection to $this->host:$this->port\n\n");
+              #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sucessfull WS connection to $this->host:$this->port\n\n");
+              $this->SendDebug(__FUNCTION__, "Sucessfull WS connection to $this->host:$this->port\n\n", 0);
           return $this->connected;   
         } else {
-            echo "$errstr ($errno)";
-            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'] .")","$errstr ($errno)");
+            #echo "$errstr ($errno)";
+            #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'] .")","$errstr ($errno)");
+            $this->SendDebug(__FUNCTION__, "$errstr ($errno)", 0);
         }
       } 
        
@@ -220,18 +225,21 @@
               $handshake = str_replace('HANDSHAKEKEYGOESHERE',$this->lg_key,$handshake); 
             else  $handshake =    '{"type":"register","id":"register_0","payload":{"forcePairing":false,"pairingType":"PROMPT","manifest":{"manifestVersion":1,"appVersion":"1.1","signed":{"created":"20140509","appId":"com.lge.test","vendorId":"com.lge","localizedAppNames":{"":"LG Remote App","ko-KR":"ë¦¬ëª¨ì»¨ ì•±","zxx-XX":"Ð›Ð“ RÑ�Ð¼otÑ� AÐŸÐŸ"},"localizedVendorNames":{"":"LG Electronics"},"permissions":["TEST_SECURE","CONTROL_INPUT_TEXT","CONTROL_MOUSE_AND_KEYBOARD","READ_INSTALLED_APPS","READ_LGE_SDX","READ_NOTIFICATIONS","SEARCH","WRITE_SETTINGS","WRITE_NOTIFICATION_ALERT","CONTROL_POWER","READ_CURRENT_CHANNEL","READ_RUNNING_APPS","READ_UPDATE_INFO","UPDATE_FROM_REMOTE_APP","READ_LGE_TV_INPUT_EVENTS","READ_TV_CURRENT_TIME"],"serial":"2f930e2d2cfe083771f68e4fe7bb07"},"permissions":["LAUNCH","LAUNCH_WEBAPP","APP_TO_APP","CLOSE","TEST_OPEN","TEST_PROTECTED","CONTROL_AUDIO","CONTROL_DISPLAY","CONTROL_INPUT_JOYSTICK","CONTROL_INPUT_MEDIA_RECORDING","CONTROL_INPUT_MEDIA_PLAYBACK","CONTROL_INPUT_TV","CONTROL_POWER","READ_APP_STATUS","READ_CURRENT_CHANNEL","READ_INPUT_DEVICE_LIST","READ_NETWORK_STATE","READ_RUNNING_APPS","READ_TV_CHANNEL_LIST","WRITE_NOTIFICATION_TOAST","READ_POWER_STATE","READ_COUNTRY_INFO"],"signatures":[{"signatureVersion":1,"signature":"eyJhbGdvcml0aG0iOiJSU0EtU0hBMjU2Iiwia2V5SWQiOiJ0ZXN0LXNpZ25pbmctY2VydCIsInNpZ25hdHVyZVZlcnNpb24iOjF9.hrVRgjCwXVvE2OOSpDZ58hR+59aFNwYDyjQgKk3auukd7pcegmE2CzPCa0bJ0ZsRAcKkCTJrWo5iDzNhMBWRyaMOv5zWSrthlf7G128qvIlpMT0YNY+n/FaOHE73uLrS/g7swl3/qH/BGFG2Hu4RlL48eb3lLKqTt2xKHdCs6Cd4RMfJPYnzgvI4BNrFUKsjkcu+WD4OO2A27Pq1n50cMchmcaXadJhGrOqH5YmHdOCj5NSHzJYrsW0HPlpuAx/ECMeIZYDh6RMqaFM2DXzdKX9NmmyqzJ3o/0lkk/N97gfVRLW5hA29yeAwaCViZNCP8iC9aO0q9fQojoa7NQnAtw=="}]}}}'; 
             #echo "Sending LG handshake\n$handshake\n"; 
-            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending LG handshake\n$handshake\n");
+            #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending LG handshake\n$handshake\n");
+            $this->SendDebug(__FUNCTION__, "Sending LG handshake\n$handshake\n", 0);
             $response = $this->send($this->hybi10Encode($handshake)); 
             if ($response) 
             { 
               #echo "\nLG Handshake Response\n".$this->json_string($response)."\n"; 
-              IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","\nLG Handshake Response\n".$this->json_string($response)."\n");
+              #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","\nLG Handshake Response\n".$this->json_string($response)."\n");
+              $this->SendDebug(__FUNCTION__, "\nLG Handshake Response\n".$this->json_string($response)."\n", 0);
               $result = $this->json_array($response); 
               if ($result && array_key_exists('id',$result) &&  $result['id']=='result_0' && array_key_exists('client-key',$result['payload'])) 
               { 
                 if ($this->lg_key == $result['payload']['client-key']) 
                 #echo "LG Client-Key successfully approved\n";  
-                IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully approved\n");
+                #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully approved\n");
+                $this->SendDebug(__FUNCTION__, "LG Client-Key successfully approved\n", 0);
               }  
               else if ($result && array_key_exists('id',$result) &&  $result['id']=='register_0' && array_key_exists('pairingType',$result['payload']) && array_key_exists('returnValue',$result['payload'])) 
               { 
@@ -248,8 +256,9 @@
                     { 
                       $lg_key_received = true; 
                       $this->lg_key = $result['payload']['client-key']; 
-                      echo "LG Client-Key successfully received: $this->lg_key\n";  
-                      IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully received: $this->lg_key\n");
+                      #echo "LG Client-Key successfully received: $this->lg_key\n";  
+                      #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","LG Client-Key successfully received: $this->lg_key\n");
+                      $this->SendDebug(__FUNCTION__, "LG Client-Key successfully received: $this->lg_key\n", 0);
                       
                       // Key ins Formularfeld eintragen 
                       $this->UpdateFormField("LgClientKey", "value", $this->lg_key);
@@ -259,7 +268,8 @@
                     { 
                       $error_received = true; 
                       #echo "ERROR: ".$result['error']."\n"; 
-                      IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR: ".$result['error']."\n");
+                      #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR: ".$result['error']."\n");
+                      $this->SendDebug(__FUNCTION__, "ERROR: ".$result['error']."\n", 0);
                     } 
                     usleep(200000); 
                     $time = microtime(1); 
@@ -270,7 +280,8 @@
           }  
           else 
           #echo "ERROR during LG handshake:\n"; 
-          IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR during LG handshake:\n");
+          #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","ERROR during LG handshake:\n");
+          $this->SendDebug(__FUNCTION__, "ERROR during LG handshake:\n", 0);
         }  
         else return FALSE;  
       }
@@ -280,7 +291,8 @@
         $this->connected=false; 
         @fclose($this->sock); 
         #echo "Connection closed to $this->host\n";
-        IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Connection closed to $this->host\n");
+        #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Connection closed to $this->host\n");
+        $this->SendDebug(__FUNCTION__, "Connection closed to $this->host\n", 0);
       } 
   
       private function send(string $msg) 
@@ -297,14 +309,17 @@
         if ($this->connected) 
         { 
           #echo "Sending command      : $cmd\n";
-          IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending command      : $cmd\n");
+          #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Sending command      : $cmd\n");
+          $this->SendDebug(__FUNCTION__, "Sending command      : $cmd\n", 0);
           $response = $this->send($this->hybi10Encode($cmd)); 
           if ($response) 
             #echo "Command response     : ".$this->json_string($response)."\n"; 
-            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Command response     : ".$this->json_string($response)."\n");
+            #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Command response     : ".$this->json_string($response)."\n");
+            $this->SendDebug(__FUNCTION__, "Command response     : ".$this->json_string($response)."\n", 0);
           else  
             #echo "Error sending command: $cmd\n"; 
-            IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Error sending command: $cmd\n");
+            #IPS_LogMessage(IPS_GetName($_IPS['SELF'])." (". $_IPS['SELF'].")","Error sending command: $cmd\n");
+            $this->SendDebug(__FUNCTION__, "Error sending command: $cmd\n", 0);
           return $response;
         }  
       } 
