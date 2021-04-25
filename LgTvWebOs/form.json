@@ -1,52 +1,52 @@
 {
   "elements":[
-      { 
-        "type": "ValidationTextBox", 
-        "name": "IPAddress", 
-        "caption": "Lg Tv IP-Adress" 
-      },
-      {
-        "type": "ValidationTextBox",
-        "name": "LgClientKey",
-        "caption": "Lg Client Key",
-        "value": ""
-      },
-      {
-        "type": "Label"
-      },
-      {
-        "type": "Label"
-      },
-      {
-        "type": "CheckBox",
-        "caption": "Create TurnOff Button",
-        "name": "turnOff"
-      },
-      {
-        "type": "CheckBox",
-        "caption": "Create Mute Button",
-        "name": "mute"
-      },
-      {
-        "type": "CheckBox",
-        "caption": "Create volumeUpDown Button",
-        "name": "volumeUpDown"
-      },
-      {
-        "type": "CheckBox",
-        "caption": "Create volume slider",
-        "name": "setVolume"
-      },
-      {
-        "type": "CheckBox",
-        "caption": "Create startApp Button",
-        "name": "startApp"
-      },
-      {
-        "type": "CheckBox",
-        "caption": "Create PlayPause Button",
-        "name": "play_pause"
-      }
+    { 
+      "type": "ValidationTextBox", 
+      "name": "IPAddress", 
+      "caption": "Lg Tv IP-Adress" 
+    },
+    {
+      "type": "ValidationTextBox",
+      "name": "LgClientKey",
+      "caption": "Lg Client Key",
+      "value": ""
+    },
+    {
+      "type": "ExpansionPanel",
+      "caption": "Create Variables...",
+      "items": [
+        {
+          "type": "CheckBox",
+          "caption": "Create TurnOff Button",
+          "name": "turnOff"
+        },
+        {
+          "type": "CheckBox",
+          "caption": "Create Mute Button",
+          "name": "mute"
+        },
+        {
+          "type": "CheckBox",
+          "caption": "Create volumeUpDown Button",
+          "name": "volumeUpDown"
+        },
+        {
+          "type": "CheckBox",
+          "caption": "Create volume slider",
+          "name": "setVolume"
+        },
+        {
+          "type": "CheckBox",
+          "caption": "Create startApp Button",
+          "name": "startApp"
+        },
+        {
+          "type": "CheckBox",
+          "caption": "Create PlayPause Button",
+          "name": "play_pause"
+        }
+      ]
+    }
   ],
   "actions": [
     {

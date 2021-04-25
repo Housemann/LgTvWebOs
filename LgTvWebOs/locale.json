@@ -10,6 +10,7 @@
         "Send Test Message": "Test-Nachricht senden",
         "Lg Tv IP-Adress": "Lg TV IP-Adresse",
         "Set Volume": "Lautstärke",
+        "Create Variables...": "Variablen anlegen...",
 
         "Mute": "Lautlos",
         "Turn Off": "Ausschalten",
@@ -20,6 +21,28 @@
         "Device connection": "Geräteanschluss",
         "Notifications": "Benachrichtigungen",
         "Settings": "Einstellungen"
-      }
+      },
+      "de_DE": { 
+        "Create Mute Button": "Stumm Button erstellen",
+        "Create TurnOff Button": "Aus Button erstellen",
+        "Create volumeUpDown Button": "Lautstärke lauter - leiser Button erstellen",
+        "Create startApp Button": "App Button erstellen",
+        "Create PlayPause Button": "Play / Pause Button erstellen",
+        "Create volume slider": "Lautstärkeregler erstellen",
+        "Send Test Message": "Test-Nachricht senden",
+        "Lg Tv IP-Adress": "Lg TV IP-Adresse",
+        "Set Volume": "Lautstärke",
+        "Create Variables...": "Variablen anlegen...",
+
+        "Mute": "Lautlos",
+        "Turn Off": "Ausschalten",
+        "Volume + / -": "Lautstärke + / -",
+        "Play / Pause": "Wiedergabe / Stop",
+        "This is a test": "das ist ein Test",
+
+        "Device connection": "Geräteanschluss",
+        "Notifications": "Benachrichtigungen",
+        "Settings": "Einstellungen"
+      }      
   }
 }
